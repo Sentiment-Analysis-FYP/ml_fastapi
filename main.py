@@ -18,9 +18,11 @@ async def say_hello(name: str):
 
 @app.get("/download/{file_name}")
 async def download_file(file_name: str):
-    return send_file(file_name)
+    response = send_file(file_name)
+    return response
 
 
 @app.post("/upload/{scrape_id}")
 async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
-    return receive_scrape(scrape_id, file)
+    response = await receive_scrape(scrape_id, file)
+    return response
