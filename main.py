@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 
-from controller.download import send_file
+from controller.receive import receive_scrape
+from controller.send import send_file
 
 app = FastAPI()
 
@@ -18,3 +19,8 @@ async def say_hello(name: str):
 @app.get("/download/{file_name}")
 async def download_file(file_name: str):
     return send_file(file_name)
+
+
+@app.post("/upload/{scrape_id}")
+async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
+    return receive_scrape(scrape_id, file)
