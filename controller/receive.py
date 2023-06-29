@@ -17,8 +17,4 @@ async def receive_scrape(scrape_id: str, file: UploadFile = UploadFile(...)):
     finally:
         file.file.close()
 
-    # with open(file_path, "wb") as buffer:
-    #     buffer.write(await file.read())
-    #
-    # await file.close()
     return {"filename": f"{scrape_id}.csv", "scrape_id": scrape_id}
