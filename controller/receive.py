@@ -4,13 +4,11 @@ from fastapi import UploadFile
 
 
 async def receive_scrape(scrape_id: str, file: UploadFile = UploadFile(...)):
-    save_directory = "/text_data/incomplete"
-    file_path = path.join("text_data", "incomplete", f"{scrape_id}.json")
-    # file_path = path.join(save_directory, f"{scrape_id}.json")
+    file_path = f"text_data/incomplete/{scrape_id}.csv"
 
     try:
         contents = file.file.read()
-        with open(file.filename, 'wb') as f:
+        with open(file_path, 'wb') as f:
             f.write(contents)
 
     except Exception:
@@ -23,4 +21,4 @@ async def receive_scrape(scrape_id: str, file: UploadFile = UploadFile(...)):
     #     buffer.write(await file.read())
     #
     # await file.close()
-    return {"filename": f"{scrape_id}.json", "scrape_id": scrape_id}
+    return {"filename": f"{scrape_id}.csv", "scrape_id": scrape_id}
