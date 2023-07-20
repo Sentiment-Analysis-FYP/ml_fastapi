@@ -1,12 +1,14 @@
 import os
 
 import tweepy
-from tweepy import API, OAuthHandler, Cursor
 from dotenv import load_dotenv
 
 
 async def run_scrape(data: dict):
-    keywords, start_date, end_date = data
+    keywords = data['keywords']
+    start_date = data['start_date']
+    end_date = data['end_date']
+    # print(keywords)
     scrape = await get_tweets(keywords, start_date, end_date)
     return scrape
 
@@ -21,7 +23,7 @@ def load_api_keys():
     return consumer_key, consumer_secret, access_token, access_token_secret, bearer_token
 
 
-async def get_tweets(keywords, start_date, end_date):
+async def get_tweets(keywords: list, start_date, end_date):
     consumer_key, consumer_secret, access_token, access_token_secret, bearer_token = load_api_keys()
 
     # auth = OAuthHandler(consumer_key, consumer_secret)
@@ -33,6 +35,7 @@ async def get_tweets(keywords, start_date, end_date):
 
     result = []
     query = ' OR '.join(keywords)
+    print(query)
     #
     # try:
     #     # Format the query with multiple keywords joined by OR
@@ -51,10 +54,11 @@ async def get_tweets(keywords, start_date, end_date):
 
     # tweets = client.search_recent_tweets(query=query, max_results=100)
 
-    for tweet in tweepy.Paginator(client.search_recent_tweets, query=f"{query} -filter:retweets lang:en",
-                                  user_fields=['username', 'name'],
+    for tweet in tweepy.Paginator(client.search_recent_tweets, query=f"({query}) lang=en",
+                                  user_fields=['username', 'name'], expansions=['author_id'],
                                   tweet_fields=['created_at', 'text'], max_results=10).flatten(limit=10):
-        result.append(tweet)
+        if not tweet.text.startswith("RT @"):
+            result.append(tweet)
 
     # for tweet in tweets.data:
     #     result.append(tweet)
