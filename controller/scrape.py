@@ -26,42 +26,16 @@ def load_api_keys():
 async def get_tweets(keywords: list, start_date, end_date):
     consumer_key, consumer_secret, access_token, access_token_secret, bearer_token = load_api_keys()
 
-    # auth = OAuthHandler(consumer_key, consumer_secret)
-    # auth.set_access_token(access_token, access_token_secret)
-    # api = API(auth, wait_on_rate_limit=True)
-    # client = tweepy.Client(consumer_key=consumer_key, consumer_secret=consumer_secret, access_token=access_token,
-    #                        access_token_secret=access_token_secret)
     client = tweepy.Client(bearer_token=bearer_token, wait_on_rate_limit=True)
 
     result = []
     query = ' OR '.join(keywords)
     print(query)
-    #
-    # try:
-    #     # Format the query with multiple keywords joined by OR
-    #
-    #     # Fetch tweets based on the query and date range
-    #     # tweets = Cursor(api.search_tweets, q=query, lang='en', tweet_mode='extended').items()
-    #     tweets = client.search_recent_tweets(query=query, max_results=10)
-    #     for tweet in tweets:
-    #         result.append(tweet.full_text)
-    #
-    #     print(len(result))
-    #
-    # except Exception as e:
-    #     print("Error occurred during the search:", e)
-    #     return []
-
-    # tweets = client.search_recent_tweets(query=query, max_results=100)
 
     for tweet in tweepy.Paginator(client.search_recent_tweets, query=f"({query}) lang=en",
                                   user_fields=['username', 'name'], expansions=['author_id'],
                                   tweet_fields=['created_at', 'text'], max_results=10).flatten(limit=10):
         if not tweet.text.startswith("RT @"):
             result.append(tweet)
-
-    # for tweet in tweets.data:
-    #     result.append(tweet)
-    #     print(tweet.text.encode("utf-8"))
 
     return result
