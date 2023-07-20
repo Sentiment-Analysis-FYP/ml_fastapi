@@ -1,6 +1,7 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, Body
 
 from controller.receive import receive_scrape
+from controller.scrape import run_scrape
 from controller.send import send_file
 
 app = FastAPI()
@@ -25,4 +26,11 @@ async def download_file(file_name: str):
 @app.post("/upload/{scrape_id}")
 async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
     response = await receive_scrape(scrape_id, file)
+    return response
+
+
+@app.post("/scrape/{scrape_id}")
+async def scrape(scrape_id: str):
+    data: dict = Body(...)
+    response = await run_scrape(scrape_id, data)
     return response
