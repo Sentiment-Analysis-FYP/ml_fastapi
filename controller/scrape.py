@@ -44,52 +44,8 @@ async def get_user_id(screen_name: str):
     return user.data.id
 
 
-async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, end_date):
-    """2-step function to get tweets based on provided username, and then based on the other parameters"""
-
-    result = []
-    query = ' OR '.join(keywords)
-    print(query)
-
-    csv_file = open(f"text_data/incomplete/{scrape_id}.csv", 'w')
-    csv_writer = csv.writer(csv_file)
-
-    paginator = tweepy.Paginator(client.search_recent_tweets,
-                                 query=f"({query}) lang=en",
-                                 user_fields=['username', 'name'],
-                                 expansions='author_id',
-                                 tweet_fields=['id', 'author_id', 'created_at', 'text'],
-                                 max_results=MAX_RESULTS,
-                                 limit=FLATTEN_LIMIT)
-
+async def write_to_csv(paginator, csv_writer):
     for response in paginator:
-        # print(f"{response.data}".encode('utf-8'))
-        users = response.includes.get('users')
-        # print(len(users))
-        # print(f"{users}".encode('utf-8'))
-    # for tweet in tweepy.Paginator(client.search_recent_tweets,
-    #                                  query=f"({query}) lang=en",
-    #                                  user_fields=['username', 'name'],
-    #                                  expansions=['author_id'],
-    #                                  tweet_fields=['id', 'author_id', 'created_at', 'text'],
-    #                                  max_results=MAX_RESULTS) \
-    #            .flatten(limit=FLATTEN_LIMIT):
-    #        # if not tweet.text.startswith("RT @"):
-    #        result.append(tweet)
-    #        csv_writer.writerow([tweet.id, tweet.created_at, tweet.text.encode('utf-8'), tweet.user.screen_name])
-
-    if not username:
-        return result
-
-    # username provided
-    user_id = await get_user_id(username)
-    # for tweet in tweepy.Paginator(client.get_users_tweets, id=user_id, max_results=MAX_RESULTS) \
-    #         .flatten(limit=FLATTEN_LIMIT):
-    #     result.append(tweet)
-
-    username_paginator = tweepy.Paginator(client.get_users_tweets, id=user_id, max_results=MAX_RESULTS)
-
-    for response in username_paginator:
         tweets = response.data
         users = response.includes['users']
         users = {user["id"]: user for user in users}
@@ -99,5 +55,36 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
             author = users[tweet.author_id]
             print(f"The tweet {tweet.id} was written by {author.username}.")
             csv_writer.writerow([tweet.id, tweet.created_at, tweet.text.encode('utf-8'), author.username])
+    return
 
-    return result
+
+async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, end_date):
+    """2-step function to get tweets based on provided username, and then based on the other parameters"""
+
+    query = ' OR '.join(keywords)
+    print(query)
+
+    csv_file = open(f"text_data/incomplete/{scrape_id}.csv", 'w')
+    csv_writer = csv.writer(csv_file)
+
+    keywords_paginator = tweepy.Paginator(client.search_recent_tweets,
+                                          query=f"({query}) lang=en",
+                                          user_fields=['username', 'name'],
+                                          expansions='author_id',
+                                          tweet_fields=['id', 'author_id', 'created_at', 'text'],
+                                          max_results=MAX_RESULTS,
+                                          limit=FLATTEN_LIMIT)
+
+    await write_to_csv(keywords_paginator, csv_writer)
+
+    if not username:
+        return "keywords scraped"
+
+    # username provided
+    user_id = await get_user_id(username)
+
+    username_paginator = tweepy.Paginator(client.get_users_tweets, id=user_id, max_results=MAX_RESULTS)
+
+    await write_to_csv(username_paginator, csv_writer)
+
+    return "username and keywords scraped"
