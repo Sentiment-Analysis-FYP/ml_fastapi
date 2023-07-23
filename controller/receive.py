@@ -8,13 +8,16 @@ async def receive_scrape(scrape_id: str, file: UploadFile = UploadFile(...)):
 
     try:
         contents = file.file.read()
+
+        # insert analysis here
         with open(file_path, 'wb') as f:
             f.write(contents)
 
-    except Exception:
-        return {"message": "There was an error uploading the file"}
+    except Exception as e:
+        return {"message": f"There was an error uploading the file: \n{e}"}
 
     finally:
         file.file.close()
 
+    # return would be analyzed document
     return {"filename": f"{scrape_id}.csv", "scrape_id": scrape_id}
