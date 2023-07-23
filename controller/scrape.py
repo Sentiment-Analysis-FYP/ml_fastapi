@@ -49,7 +49,6 @@ async def write_to_csv(paginator, csv_writer):
         tweets = response.data
         users = response.includes['users']
         users = {user["id"]: user for user in users}
-        # print(f"{users}".encode('utf-8'))
 
         for tweet in tweets:
             author = users[tweet.author_id]
