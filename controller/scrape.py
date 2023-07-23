@@ -9,6 +9,7 @@ FLATTEN_LIMIT = 2
 
 
 async def run_scrape(data: dict, scrape_id):
+    print(f"scrape_id: {scrape_id}")
     username = data['username']
     keywords = data['keywords']
     start_date = data['start_date']
@@ -65,6 +66,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
 
     csv_file = open(f"text_data/incomplete/{scrape_id}.csv", 'w')
     csv_writer = csv.writer(csv_file)
+    csv_writer.writerow(["id", "created_at", "text", "username"])
 
     keywords_paginator = tweepy.Paginator(client.search_recent_tweets,
                                           query=f"({query}) lang=en",
@@ -77,6 +79,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     await write_to_csv(keywords_paginator, csv_writer)
 
     if not username:
+        csv_file.close()
         return "keywords scraped"
 
     # username provided
@@ -85,5 +88,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     username_paginator = tweepy.Paginator(client.get_users_tweets, id=user_id, max_results=MAX_RESULTS)
 
     await write_to_csv(username_paginator, csv_writer)
+
+    csv_file.close()
 
     return "username and keywords scraped"
