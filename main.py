@@ -33,6 +33,6 @@ async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
 async def begin_scrape(request: Request, scrape_id: str):
     data: dict = await request.json()
     # print(data['keywords'])
-    scrape = await run_scrape(data)
+    scrape = await run_scrape(data, scrape_id)
     # scrape = []
     return scrape
