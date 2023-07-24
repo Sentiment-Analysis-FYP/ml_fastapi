@@ -1,4 +1,10 @@
 import pandas as pd
+from joblib import load
+
+
+def load_model():
+    model = load('logisticregression.joblib')
+    return model
 
 
 def remove_user_handles(txt):
