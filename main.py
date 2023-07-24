@@ -1,5 +1,6 @@
-from fastapi import FastAPI, UploadFile, Body, Request
+from fastapi import FastAPI, UploadFile, Body, Request, BackgroundTasks
 
+from classifier.utils import run_classifiers
 from controller.receive import receive_scrape
 from controller.scrape import run_scrape
 from controller.send import send_file
@@ -30,9 +31,19 @@ async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
 
 
 @app.post("/scrape/{scrape_id}")
-async def begin_scrape(request: Request, scrape_id: str):
+async def begin_scrape(request: Request, scrape_id: str, background_tasks: BackgroundTasks):
     data: dict = await request.json()
     # print(data['keywords'])
+
+    # save scrape to incomplete directory
     scrape = await run_scrape(data, scrape_id)
-    # scrape = []
+
+    # run classifiers on the scrape in background
+    background_tasks.add_task(run_classifiers_in_background, scrape_id)
+
     return scrape
+
+
+def run_classifiers_in_background(scrape_id):
+    run_classifiers(scrape_id)
+    return
