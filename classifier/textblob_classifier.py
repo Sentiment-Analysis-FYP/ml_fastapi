@@ -9,7 +9,6 @@ def run_textblob(scrape_id):
         lambda t: TextBlob(t).sentiment.polarity)
 
     df['t_sentiment_subjectivity'] = df['text'].apply(
-        lambda t: TextBlob(t).sentiment.subjectivity
-    )
+        lambda t: TextBlob(t).sentiment.subjectivity)
 
     return
