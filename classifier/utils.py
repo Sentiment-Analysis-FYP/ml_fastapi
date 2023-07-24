@@ -55,3 +55,23 @@ def get_dataframe_from_scrape_id(scrape_id):
     df['created_at'] = pd.to_datetime(df['created_at']).apply(lambda d: d.date())
 
     return df
+
+
+def add_to_compilation(dataframe):
+    """Add a newly analyzed scrape to the compilation csv"""
+    file_path = f"text_data/compilation/compilation.csv"
+
+    if not os.path.isfile(file_path):
+        dataframe.to_csv(file_path, index=False, encoding='utf-8')
+    else:  # else it exists so append without writing the header
+        dataframe.to_csv(file_path, mode='a', header=False, index=False, encoding='utf-8')
+    # dataframe.to_csv(file_path, mode='a', header=False)
+
+    return
+
+
+def get_compilation():
+    """Get the compilation csv (for sending)"""
+    file_path = f"text_data/compilation/compilation.csv"
+
+    return
