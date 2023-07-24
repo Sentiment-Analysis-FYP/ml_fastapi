@@ -68,15 +68,16 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["id", "created_at", "text", "username"])
 
-    keywords_paginator = tweepy.Paginator(client.search_recent_tweets,
-                                          query=f"({query}) lang=en",
-                                          user_fields=['username', 'name'],
-                                          expansions='author_id',
-                                          tweet_fields=['id', 'author_id', 'created_at', 'text'],
-                                          max_results=MAX_RESULTS,
-                                          limit=FLATTEN_LIMIT)
+    if len(keywords) == 0:
+        keywords_paginator = tweepy.Paginator(client.search_recent_tweets,
+                                              query=f"({query}) lang=en",
+                                              user_fields=['username', 'name'],
+                                              expansions='author_id',
+                                              tweet_fields=['id', 'author_id', 'created_at', 'text'],
+                                              max_results=MAX_RESULTS,
+                                              limit=FLATTEN_LIMIT)
 
-    await write_to_csv(keywords_paginator, csv_writer)
+        await write_to_csv(keywords_paginator, csv_writer)
 
     if not username:
         csv_file.close()
@@ -85,9 +86,18 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     # username provided
     user_id = await get_user_id(username)
 
-    username_paginator = tweepy.Paginator(client.get_users_tweets, id=user_id, max_results=MAX_RESULTS)
+    username_paginator = tweepy.Paginator(client.get_users_tweets,
+                                          id=user_id,
+                                          max_results=MAX_RESULTS,
+                                          limit=FLATTEN_LIMIT)
 
-    await write_to_csv(username_paginator, csv_writer)
+    # await write_to_csv(username_paginator, csv_writer)
+    for response in username_paginator:
+        tweets = response.data
+
+        for tweet in tweets:
+            print(tweet.text.encode('utf-8'))
+            csv_writer.writerow([tweet.id, tweet.created_at, tweet.text.encode('utf-8'), username])
 
     csv_file.close()
 
