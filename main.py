@@ -3,7 +3,7 @@ from fastapi import FastAPI, UploadFile, Body, Request, BackgroundTasks
 from classifier.main import run_classifiers
 from controller.receive import receive_scrape
 from controller.scrape import run_scrape
-from controller.send import send_file
+from controller.send import send_file, send_compilation
 
 app = FastAPI()
 
@@ -21,6 +21,12 @@ async def say_hello(name: str):
 @app.get("/download/{file_name}")
 async def download_file(file_name: str):
     response = send_file(file_name)
+    return response
+
+
+@app.get("/download/compilation")
+async def download_compilation():
+    response = send_compilation()
     return response
 
 
