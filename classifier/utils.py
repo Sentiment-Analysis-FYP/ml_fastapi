@@ -33,6 +33,11 @@ def save_as_json(dataframe, new_file_name):
     return
 
 
+def save_csv(dataframe, file_name):
+    dataframe.to_csv(file_name, encoding='utf-8', index=False)
+    return
+
+
 def get_dataframe_from_scrape_id(scrape_id):
     file_path = f"text_data/incomplete/{scrape_id}.csv"
     df = pd.read_csv(file_path)
