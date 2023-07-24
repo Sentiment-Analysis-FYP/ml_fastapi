@@ -89,6 +89,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     username_paginator = tweepy.Paginator(client.get_users_tweets,
                                           id=user_id,
                                           max_results=MAX_RESULTS,
+                                          tweet_fields=['id', 'created_at', 'text'],
                                           limit=FLATTEN_LIMIT)
 
     # await write_to_csv(username_paginator, csv_writer)
@@ -96,7 +97,6 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
         tweets = response.data
 
         for tweet in tweets:
-            print(tweet.text.encode('utf-8'))
             csv_writer.writerow([tweet.id, tweet.created_at, tweet.text.encode('utf-8'), username])
 
     csv_file.close()
