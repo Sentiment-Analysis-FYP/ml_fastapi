@@ -10,6 +10,11 @@ def load_model():
     return model
 
 
+def load_vectorizer():
+    vectorizer = load('classifier/vectorizer.pkl')
+    return vectorizer
+
+
 def remove_user_handles(txt):
     return ' '.join(word for word in txt.split(' ') if not word.startswith('@'))
 

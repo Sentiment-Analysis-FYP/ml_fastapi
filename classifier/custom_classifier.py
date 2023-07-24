@@ -3,7 +3,7 @@ import string
 
 from nltk import RegexpTokenizer, PorterStemmer, WordNetLemmatizer
 
-from classifier.utils import load_model, get_dataframe_from_scrape_id, save_csv
+from classifier.utils import load_model, get_dataframe_from_scrape_id, save_csv, load_vectorizer
 
 
 def run_custom(scrape_id):
@@ -12,11 +12,17 @@ def run_custom(scrape_id):
     df = get_dataframe_from_scrape_id(scrape_id)
 
     # data cleaning to match expected
+    df_clean = df.copy(deep=True)
+    df_clean = clean_data(df_clean)
 
-    df['lr_sentiment'] = lr_model.predict(df['text'])
+    # df['lr_sentiment'] = lr_model.predict(df['text'])
 
     complete_path = f"text_data/complete/{scrape_id}.csv"
     save_csv(df, complete_path)
+
+    print("custom complete")
+
+    return
 
 
 def clean_data(dataset):
@@ -86,5 +92,9 @@ def clean_data(dataset):
         return data
 
     dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
+
+    vectorizer = load_vectorizer()
+
+    dataset = vectorizer.transform(dataset)
 
     return dataset

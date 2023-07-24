@@ -13,4 +13,6 @@ def run_textblob(scrape_id):
 
     save_csv(df, f"text_data/incomplete/{scrape_id}.csv")
 
+    print("textblob complete")
+
     return
