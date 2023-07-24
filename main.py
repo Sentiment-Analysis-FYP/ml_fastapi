@@ -24,7 +24,7 @@ async def download_file(file_name: str):
     return response
 
 
-@app.get("/download/compilation")
+@app.get("/download/complete/compilation")
 async def download_compilation():
     response = send_compilation()
     return response

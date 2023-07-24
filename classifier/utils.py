@@ -68,10 +68,3 @@ def add_to_compilation(dataframe):
     # dataframe.to_csv(file_path, mode='a', header=False)
 
     return
-
-
-def get_compilation():
-    """Get the compilation csv (for sending)"""
-    file_path = f"text_data/compilation/compilation.csv"
-
-    return
