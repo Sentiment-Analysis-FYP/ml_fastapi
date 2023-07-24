@@ -5,7 +5,7 @@ import csv
 from dotenv import load_dotenv
 
 MAX_RESULTS = 10
-FLATTEN_LIMIT = 2
+FLATTEN_LIMIT = 1
 
 
 async def run_scrape(data: dict, scrape_id):
