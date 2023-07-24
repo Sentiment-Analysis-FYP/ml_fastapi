@@ -12,10 +12,15 @@ def run_custom(scrape_id):
     df = get_dataframe_from_scrape_id(scrape_id)
 
     # data cleaning to match expected
-    df_clean = df.copy(deep=True)
-    df_clean = clean_data(df_clean)
+    df_predict = df.copy(deep=True)
+    df_predict = clean_data(df_predict)
 
-    # df['lr_sentiment'] = lr_model.predict(df['text'])
+    # df['lr_sentiment'] = lr_model.predict(df_predict)
+    lr_sentiment = lr_model.predict(df_predict)
+    # print(f"lr sentiment len {len(lr_sentiment)}, df items {df.count()}")
+    print(lr_sentiment, df)
+
+    df['lr_sentiment'] = lr_sentiment
 
     complete_path = f"text_data/complete/{scrape_id}.csv"
     save_csv(df, complete_path)
@@ -93,8 +98,11 @@ def clean_data(dataset):
 
     dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 
+    # join the arrays into strings
+    dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x))
+
     vectorizer = load_vectorizer()
 
-    dataset = vectorizer.transform(dataset)
+    dataset = vectorizer.transform(dataset['text'])
 
     return dataset
