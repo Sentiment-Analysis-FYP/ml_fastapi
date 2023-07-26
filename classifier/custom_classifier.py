@@ -11,6 +11,10 @@ def run_custom(scrape_id):
     lr_model = load_model()
     df = get_dataframe_from_scrape_id(scrape_id)
 
+    if df.empty:
+        print('empty dataframe, exiting classifier')
+        return
+
     # data cleaning to match expected
     df_predict = df.copy(deep=True)
     df_predict = clean_data(df_predict)

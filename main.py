@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, Request, BackgroundTasks
 
 from classifier.main import run_classifiers
+from classifier.utils import send_request_to_express
 from controller.receive import receive_scrape
 from controller.scrape import run_scrape
 from controller.send import send_file, send_compilation
@@ -42,7 +43,7 @@ async def begin_scrape(request: Request, scrape_id: str, background_tasks: Backg
     # print(data['keywords'])
 
     # save scrape to incomplete directory
-    scrape = await run_scrape(data, scrape_id)
+    background_tasks.add_task(run_scrape, data, scrape_id)
 
     # run classifiers on the scrape in background
     background_tasks.add_task(run_classifiers_in_background, scrape_id)
@@ -52,7 +53,6 @@ async def begin_scrape(request: Request, scrape_id: str, background_tasks: Backg
 
 def run_classifiers_in_background(scrape_id):
     run_classifiers(scrape_id)
-    send_request_to_express(scrape_id)
+    rsp = send_request_to_express(scrape_id)
+    print(rsp)
     return
-
-

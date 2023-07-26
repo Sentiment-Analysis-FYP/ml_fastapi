@@ -15,6 +15,8 @@ async def run_scrape(data: dict, scrape_id):
     start_date = data['start_date']
     end_date = data['end_date']
     # print(keywords)
+    if not (username or keywords):
+        return
     scrape = await get_tweets(scrape_id, username, keywords, start_date, end_date)
     return scrape
 
