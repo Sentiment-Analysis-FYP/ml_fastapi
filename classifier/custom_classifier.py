@@ -22,6 +22,8 @@ def run_custom(scrape_id):
 
     df['lr_sentiment'] = lr_sentiment
 
+    df = calculate_score(df)
+
     complete_path = f"text_data/complete/{scrape_id}.csv"
     save_csv(df, complete_path)
     add_to_compilation(df)
@@ -29,6 +31,14 @@ def run_custom(scrape_id):
     print("custom complete")
 
     return
+
+
+def calculate_score(dataset):
+    dataset['score'] = dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity']
+    # Clip the values to the range of -1 to 1
+    dataset['score'] = dataset['score'].clip(lower=-1, upper=1)
+
+    return dataset
 
 
 def clean_data(dataset):

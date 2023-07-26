@@ -53,7 +53,7 @@ async def write_to_csv(paginator, csv_writer):
 
         for tweet in tweets:
             author = users[tweet.author_id]
-            print(f"The tweet {tweet.id} was written by {author.username}.")
+            # print(f"The tweet {tweet.id} was written by {author.username}.")
             csv_writer.writerow([tweet.id, tweet.created_at, tweet.text.encode('utf-8'), author.username])
     return
 

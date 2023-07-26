@@ -31,11 +31,11 @@ def format_output(output_dict):
     return polarity
 
 
-def save_as_json(dataframe, new_file_name):
+def save_as_json(dataframe, json_file_name):
     out = dataframe.to_json(orient='records', force_ascii=False)[1:-1]
     out = '[' + out + ']'
 
-    with open(new_file_name + '.json', 'w', encoding='utf-8') as f:
+    with open(json_file_name + '.json', 'w', encoding='utf-8') as f:
         f.write(out)
     # dataframe.to_json(new_file_name + '.json', orient='records', lines=True)
     return
