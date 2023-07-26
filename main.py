@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, Body, Request, BackgroundTasks
+from fastapi import FastAPI, UploadFile, Request, BackgroundTasks
 
 from classifier.main import run_classifiers
 from controller.receive import receive_scrape
@@ -53,3 +53,5 @@ async def begin_scrape(request: Request, scrape_id: str, background_tasks: Backg
 def run_classifiers_in_background(scrape_id):
     run_classifiers(scrape_id)
     return
+
+

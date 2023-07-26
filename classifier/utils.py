@@ -2,6 +2,8 @@ import os
 import sys
 
 import pandas as pd
+import requests
+from dotenv import load_dotenv
 from joblib import load
 
 
@@ -66,5 +68,20 @@ def add_to_compilation(dataframe):
     else:  # else it exists so append without writing the header
         dataframe.to_csv(file_path, mode='a', header=False, index=False, encoding='utf-8')
     # dataframe.to_csv(file_path, mode='a', header=False)
+
+    return
+
+
+def send_request_to_express(scrape_id):
+    """Send the compilation to Express indicating completion"""
+    load_dotenv()
+    express_url = os.getenv('EXPRESS_BASE_URL')
+    file_path = f"text_data/compilation/compilation.csv"
+
+    df = pd.read(file_path)
+    df_json = df.to_dict(orient='records')
+
+    url = f"{express_url}/complete"
+    response = requests.post(url, json=df_json)
 
     return
