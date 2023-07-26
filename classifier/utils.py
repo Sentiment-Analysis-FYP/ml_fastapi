@@ -79,9 +79,11 @@ def send_request_to_express(scrape_id):
     file_path = f"text_data/compilation/compilation.csv"
 
     df = pd.read(file_path)
-    df_json = df.to_dict(orient='records')
+    json_payload = {
+        'scrape_id': scrape_id,
+        'data': df.to_dict(orient='records')}
 
     url = f"{express_url}/complete"
-    response = requests.post(url, json=df_json)
+    response = requests.post(url, json=json_payload)
 
     return

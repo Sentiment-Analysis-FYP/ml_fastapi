@@ -52,6 +52,7 @@ async def begin_scrape(request: Request, scrape_id: str, background_tasks: Backg
 
 def run_classifiers_in_background(scrape_id):
     run_classifiers(scrape_id)
+    send_request_to_express(scrape_id)
     return
 
 
