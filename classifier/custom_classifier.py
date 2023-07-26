@@ -5,10 +5,12 @@ from nltk import RegexpTokenizer, PorterStemmer, WordNetLemmatizer
 
 from classifier.utils import load_model, get_dataframe_from_scrape_id, save_csv, load_vectorizer, add_to_compilation
 
+lr_model = load_model()
+vectorizer = load_vectorizer()
+
 
 def run_custom(scrape_id):
     """Logistic Regression model with 83% accuracy"""
-    lr_model = load_model()
     df = get_dataframe_from_scrape_id(scrape_id)
 
     if df.empty:
@@ -115,8 +117,6 @@ def clean_data(dataset):
 
     # join the arrays into strings
     dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x))
-
-    vectorizer = load_vectorizer()
 
     dataset = vectorizer.transform(dataset['text'])
 

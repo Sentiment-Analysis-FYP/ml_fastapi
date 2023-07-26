@@ -70,7 +70,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["id", "created_at", "text", "username"])
 
-    if len(keywords) == 0:
+    if len(keywords) != 0:
         keywords_paginator = tweepy.Paginator(client.search_recent_tweets,
                                               query=f"({query}) lang=en",
                                               user_fields=['username', 'name'],
