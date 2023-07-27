@@ -1,4 +1,6 @@
-from fastapi import FastAPI, UploadFile, Request, BackgroundTasks
+import shutil
+
+from fastapi import FastAPI, UploadFile, Request, BackgroundTasks, Form
 
 from classifier.main import run_classifiers
 from classifier.utils import send_request_to_express
@@ -32,8 +34,11 @@ async def download_compilation():
 
 
 @app.post("/upload/{scrape_id}")
-async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
+async def upload_file(scrape_id: str, background_tasks: BackgroundTasks, email: str = Form(...),
+                      file: UploadFile = UploadFile(...)):
+    print(email)
     response = await receive_scrape(scrape_id, file)
+    background_tasks.add_task(run_classifiers_in_background, scrape_id, email)
     return response
 
 

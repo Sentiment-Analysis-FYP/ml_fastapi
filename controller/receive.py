@@ -3,11 +3,11 @@ from fastapi import UploadFile
 
 async def receive_scrape(scrape_id: str, file: UploadFile = UploadFile(...)):
     file_path = f"text_data/incomplete/{scrape_id}.csv"
+    print(file.filename)
 
     try:
         contents = file.file.read()
 
-        # insert analysis here
         with open(file_path, 'wb') as f:
             f.write(contents)
 

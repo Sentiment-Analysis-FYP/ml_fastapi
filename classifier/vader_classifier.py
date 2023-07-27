@@ -1,4 +1,3 @@
-import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 from classifier.utils import get_dataframe_from_scrape_id, save_csv
