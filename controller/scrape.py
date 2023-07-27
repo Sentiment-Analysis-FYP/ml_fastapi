@@ -50,6 +50,11 @@ async def get_user_id(screen_name: str):
 async def write_to_csv(paginator, csv_writer):
     for response in paginator:
         tweets = response.data
+
+        # could be empty if not such tweets found
+        if not tweets:
+            return
+
         users = response.includes['users']
         users = {user["id"]: user for user in users}
 
@@ -69,6 +74,8 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
     csv_file = open(f"text_data/incomplete/{scrape_id}.csv", 'w')
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["id", "created_at", "text", "username"])
+
+    print(f"keywords {keywords} length {len(keywords)}")
 
     if len(keywords) != 0:
         keywords_paginator = tweepy.Paginator(client.search_recent_tweets,

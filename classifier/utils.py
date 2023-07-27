@@ -72,7 +72,7 @@ def add_to_compilation(dataframe):
     return
 
 
-def send_request_to_express(scrape_id):
+def send_request_to_express(scrape_id, email):
     """Send the compilation to Express indicating completion"""
     load_dotenv()
     express_url = os.getenv('EXPRESS_BASE_URL')
@@ -81,6 +81,7 @@ def send_request_to_express(scrape_id):
     df = pd.read_csv(file_path, encoding='utf-8')
     json_payload = {
         'scrape_id': scrape_id,
+        'email': email,
         'data': df.to_dict(orient='records')}
 
     url = f"{express_url}/ml/complete"

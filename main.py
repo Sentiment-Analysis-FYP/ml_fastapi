@@ -40,19 +40,19 @@ async def upload_file(scrape_id: str, file: UploadFile = UploadFile(...)):
 @app.post("/scrape/{scrape_id}")
 async def begin_scrape(request: Request, scrape_id: str, background_tasks: BackgroundTasks):
     data: dict = await request.json()
-    # print(data['keywords'])
+    print(data)
 
     # save scrape to incomplete directory
     background_tasks.add_task(run_scrape, data, scrape_id)
 
     # run classifiers on the scrape in background
-    background_tasks.add_task(run_classifiers_in_background, scrape_id)
+    background_tasks.add_task(run_classifiers_in_background, scrape_id, data['email'])
 
     return {"message": "running scrape task in background"}
 
 
-def run_classifiers_in_background(scrape_id):
+def run_classifiers_in_background(scrape_id, email):
     run_classifiers(scrape_id)
-    rsp = send_request_to_express(scrape_id)
+    rsp = send_request_to_express(scrape_id, email)
     print(rsp)
     return
