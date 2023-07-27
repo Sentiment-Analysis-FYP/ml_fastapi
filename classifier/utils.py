@@ -84,8 +84,6 @@ def send_request_to_express(scrape_id, email):
     df['text'] = df['text'].apply(
         lambda x: codecs.escape_decode(bytes(x[2:-1], "utf-8"))[0].decode("utf-8"))
 
-    print(df['text'])
-
     json_payload = {
         'scrape_id': scrape_id,
         'email': email,
