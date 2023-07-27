@@ -1,3 +1,4 @@
+import codecs
 import os
 import sys
 
@@ -79,6 +80,12 @@ def send_request_to_express(scrape_id, email):
     file_path = f"text_data/compilation/compilation.csv"
 
     df = pd.read_csv(file_path, encoding='utf-8')
+
+    df['text'] = df['text'].apply(
+        lambda x: codecs.escape_decode(bytes(x[2:-1], "utf-8"))[0].decode("utf-8"))
+
+    print(df['text'])
+
     json_payload = {
         'scrape_id': scrape_id,
         'email': email,
