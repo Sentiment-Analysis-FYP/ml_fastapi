@@ -1,7 +1,7 @@
 import re
 import string
-
 from nltk import RegexpTokenizer, PorterStemmer, WordNetLemmatizer
+from transformers import pipeline
 
 from classifier.utils import load_model, get_dataframe_from_scrape_id, save_csv, load_vectorizer, add_to_compilation
 
@@ -94,7 +94,10 @@ def clean_data(dataset):
     def cleaning_numbers(data):
         return re.sub('[0-9]+', '', data)
 
-    dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x))
+    dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x[1:]))
+
+    dataset = classify_emotions(dataset)
+    # print(dataset.tail())
 
     tokenizer = RegexpTokenizer(r'\w+')
     dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
@@ -120,4 +123,14 @@ def clean_data(dataset):
 
     dataset = vectorizer.transform(dataset['text'])
 
+    return dataset
+
+
+def classify_emotions(dataset):
+    model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
+    all_texts = dataset['text'].tolist()
+    print(all_texts)
+    all_emotions = model(all_texts)
+    dataset['emotion_label'] = [d['label'] for d in all_emotions]
+    dataset['emotion_score'] = [d['score'] for d in all_emotions]
     return dataset
