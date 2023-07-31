@@ -61,3 +61,10 @@ def run_classifiers_in_background(scrape_id, email):
     rsp = send_request_to_express(scrape_id, email)
     print(rsp)
     return
+
+
+# @app.post('/testlexmo')
+# async def test_lexmo(req: Request):
+#     data = await req.json()
+#     text = data['text']
+#     return get_emotion_info(text)

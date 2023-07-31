@@ -1,7 +1,9 @@
 import re
 import string
 
+import numpy
 from nltk import RegexpTokenizer, PorterStemmer, WordNetLemmatizer
+from transformers import pipeline
 
 from classifier.utils import load_model, get_dataframe_from_scrape_id, save_csv, load_vectorizer, add_to_compilation
 
@@ -27,8 +29,16 @@ def run_custom(scrape_id):
     # print(lr_sentiment, df)
 
     df['lr_sentiment'] = lr_sentiment
+    # print(df_predict.columns)
+    # df['emotion_label'] = df_predict['emotion_label']
+    # df['emotion_score'] = df_predict['emotion_score']
+
+    df = classify_emotions(df)
+    print(df.columns)
 
     df = calculate_score(df)
+
+    # df['topic'] = df['text'].apply(lambda x:)
 
     complete_path = f"text_data/complete/{scrape_id}.csv"
     save_csv(df, complete_path)
@@ -40,9 +50,10 @@ def run_custom(scrape_id):
 
 
 def calculate_score(dataset):
-    dataset['score'] = dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity']
-    # Clip the values to the range of -1 to 1
-    dataset['score'] = dataset['score'].clip(lower=-1, upper=1)
+    # dataset['score'] = dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity']
+    # # Clip the values to the range of -1 to 1
+    # dataset['score'] = dataset['score'].clip(lower=-1, upper=1)
+    dataset['score'] = numpy.clip(dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity'], -1, 1)
 
     return dataset
 
@@ -94,7 +105,12 @@ def clean_data(dataset):
     def cleaning_numbers(data):
         return re.sub('[0-9]+', '', data)
 
-    dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x))
+    dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x[1:]))
+
+    dataset['emotion_score'] = numpy.nan
+    dataset['emotion_label'] = numpy.nan
+    # dataset = classify_emotions(dataset)
+    # print(dataset.tail())
 
     tokenizer = RegexpTokenizer(r'\w+')
     dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
@@ -121,3 +137,28 @@ def clean_data(dataset):
     dataset = vectorizer.transform(dataset['text'])
 
     return dataset
+
+
+model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
+
+
+def classify_emotions(dataset):
+    print('classifying emotions')
+    all_texts = dataset['text'].tolist()
+    # print(all_texts)
+    print('list')
+    all_emotions = model(all_texts)
+    print('after run emo model')
+    # print(all_emotions)
+    dataset['emotion_score'] = [d['score'] for d in all_emotions]
+    dataset['emotion_label'] = [d['label'] for d in all_emotions]
+    # print(dataset.columns)
+    return dataset
+
+
+# def get_emotion_info(text_item):
+#     """second emo classifier, takes long"""
+#     emotion = LeXmo.LeXmo(text_item)
+#     print(emotion)
+#     emotion.pop('text', None)
+#     return emotion

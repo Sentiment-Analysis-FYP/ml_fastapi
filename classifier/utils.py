@@ -1,6 +1,5 @@
 import codecs
 import os
-import sys
 
 import pandas as pd
 import requests
@@ -19,7 +18,7 @@ def load_vectorizer():
 
 
 def remove_user_handles(txt):
-    return ' '.join(word for word in txt.split(' ') if not word.startswith('@'))
+    return ' '.join(word for word in str(txt).split(' ') if not word.startswith('@'))
 
 
 def format_output(output_dict):
@@ -77,9 +76,13 @@ def send_request_to_express(scrape_id, email):
     """Send the compilation to Express indicating completion"""
     load_dotenv()
     express_url = os.getenv('EXPRESS_BASE_URL')
-    file_path = f"text_data/compilation/compilation.csv"
+    compilation_file_path = f"text_data/compilation/compilation.csv"
+    complete_file_path = f"text_data/complete/{scrape_id}.csv"
 
-    df = pd.read_csv(file_path, encoding='utf-8')
+    # df = pd.read_csv(compilation_file_path, encoding='utf-8')
+    df = pd.read_csv(complete_file_path, encoding='utf-8')
+
+    # df = df.fillna('')
 
     df['text'] = df['text'].apply(
         lambda x: codecs.escape_decode(bytes(x[2:-1], "utf-8"))[0].decode("utf-8"))

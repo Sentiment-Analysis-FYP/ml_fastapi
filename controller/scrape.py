@@ -8,6 +8,9 @@ MAX_RESULTS = 10
 FLATTEN_LIMIT = 1
 
 
+# make dynamic
+
+
 async def run_scrape(data: dict, scrape_id):
     print(f"scrape_id: {scrape_id}")
     username = data['username']
@@ -80,7 +83,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
 
     if len(keywords) != 0:
         keywords_paginator = tweepy.Paginator(client.search_recent_tweets,
-                                              query=f"({query}) lang=en",
+                                              query=f"({query}) lang=en -RT",
                                               user_fields=['username', 'name'],
                                               expansions='author_id',
                                               tweet_fields=['id', 'author_id', 'created_at', 'text'],
@@ -98,6 +101,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
 
     username_paginator = tweepy.Paginator(client.get_users_tweets,
                                           id=user_id,
+                                          include_rts=False,
                                           max_results=MAX_RESULTS,
                                           tweet_fields=['id', 'created_at', 'text'],
                                           limit=FLATTEN_LIMIT)
