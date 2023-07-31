@@ -4,8 +4,11 @@ import tweepy
 import csv
 from dotenv import load_dotenv
 
-MAX_RESULTS = 10
+MAX_RESULTS = 20
 FLATTEN_LIMIT = 1
+
+
+# make dynamic
 
 
 async def run_scrape(data: dict, scrape_id):

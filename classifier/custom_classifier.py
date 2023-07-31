@@ -148,11 +148,11 @@ def classify_emotions(dataset):
     # print(all_texts)
     print('list')
     all_emotions = model(all_texts)
-    print('after run model')
-    print(all_emotions)
+    print('after run emo model')
+    # print(all_emotions)
     dataset['emotion_score'] = [d['score'] for d in all_emotions]
     dataset['emotion_label'] = [d['label'] for d in all_emotions]
-    print(dataset.columns)
+    # print(dataset.columns)
     return dataset
 
 
