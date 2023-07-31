@@ -17,6 +17,7 @@ async def run_scrape(data: dict, scrape_id):
     keywords = data['keywords']
     start_date = data['start_date']
     end_date = data['end_date']
+    max_tweets = data['max_tweets']
     # print(keywords)
     if not (username or keywords):
         return
