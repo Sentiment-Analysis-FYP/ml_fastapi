@@ -2,7 +2,7 @@ import shutil
 
 from fastapi import FastAPI, UploadFile, Request, BackgroundTasks, Form
 
-from classifier.main import run_classifiers
+from classifier.main import run_classifiers, run_emotion
 from classifier.utils import send_request_to_express
 from controller.receive import receive_scrape
 from controller.scrape import run_scrape
@@ -53,6 +53,9 @@ async def begin_scrape(request: Request, scrape_id: str, background_tasks: Backg
     # run classifiers on the scrape in background
     background_tasks.add_task(run_classifiers_in_background, scrape_id, data['email'])
 
+    # run emotion classifier
+    background_tasks.add_task(run_emotion_in_background, scrape_id)
+
     return {"message": "running scrape task in background"}
 
 
@@ -68,3 +71,8 @@ def run_classifiers_in_background(scrape_id, email):
 #     data = await req.json()
 #     text = data['text']
 #     return get_emotion_info(text)
+
+def run_emotion_in_background(scrape_id):
+    # get file with emotions classified
+    run_emotion(scrape_id)
+    return

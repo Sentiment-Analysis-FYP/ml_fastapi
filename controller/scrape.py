@@ -79,7 +79,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
         max_res = 100
         flatten_limit = max_tweets // 100
 
-    if max_tweets < 100:
+    if max_tweets <= 100:
         max_res = max_tweets
         flatten_limit = 1
 
@@ -112,9 +112,9 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
 
     username_paginator = tweepy.Paginator(client.get_users_tweets,
                                           id=user_id,
-                                          max_results=MAX_RESULTS,
+                                          max_results=max_res,
                                           tweet_fields=['id', 'created_at', 'text'],
-                                          limit=FLATTEN_LIMIT)
+                                          limit=flatten_limit)
 
     # await write_to_csv(username_paginator, csv_writer)
     for response in username_paginator:

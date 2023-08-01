@@ -33,7 +33,7 @@ def run_custom(scrape_id):
     # df['emotion_label'] = df_predict['emotion_label']
     # df['emotion_score'] = df_predict['emotion_score']
 
-    df = classify_emotions(df)
+    # df = classify_emotions(df)
     print(df.columns)
 
     df = calculate_score(df)
@@ -174,12 +174,15 @@ def classify_emotions(dataset):
     all_texts = dataset['text'].apply(lambda x:
                                       cleaning_numbers(
                                           cleaning_URLs(
-                                              cleaning_punctuations(cleaning_stopwords(remove_usernames(x)))))).tolist()
+                                              cleaning_punctuations(
+                                                  cleaning_stopwords(
+                                                      clean_repeating_words(
+                                                          remove_usernames(x))))))).tolist()
     print(all_texts)
     print('list')
     all_emotions = model(all_texts)
     print('after run emo model')
-    # print(all_emotions)
+    print(all_emotions)
     dataset['emotion_score'] = [d['score'] for d in all_emotions]
     dataset['emotion_label'] = [d['label'] for d in all_emotions]
     # print(dataset.columns)
