@@ -23,4 +23,6 @@ def run_emotion(scrape_id):
 
     save_csv(df, f"text_data/emotion/{scrape_id}.csv")
 
+    print(f"emotion for {scrape_id} complete")
+
     return
