@@ -95,6 +95,8 @@ def send_request_to_express(scrape_id, email):
     url = f"{express_url}/ml/complete"
     response = requests.post(url, json=json_payload)
 
+    print('can i work here?')
+
     return response.status_code
 
 

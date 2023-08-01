@@ -1,8 +1,8 @@
 import re
 import string
 
-import numpy
 from nltk import RegexpTokenizer, PorterStemmer, WordNetLemmatizer
+from numpy import clip
 from transformers import pipeline
 
 from classifier.utils import load_model, get_dataframe_from_scrape_id, save_csv, load_vectorizer, add_to_compilation
@@ -53,7 +53,7 @@ def calculate_score(dataset):
     # dataset['score'] = dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity']
     # # Clip the values to the range of -1 to 1
     # dataset['score'] = dataset['score'].clip(lower=-1, upper=1)
-    dataset['score'] = numpy.clip(dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity'], -1, 1)
+    dataset['score'] = clip(dataset['v_sentiment_polarity'] + dataset['t_sentiment_polarity'], -1, 1)
 
     return dataset
 
