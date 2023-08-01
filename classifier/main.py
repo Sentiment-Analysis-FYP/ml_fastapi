@@ -19,8 +19,10 @@ def run_emotion(scrape_id):
     df = pd.read_csv(file_path)
 
     # emo
+    print('running emotion')
     df = classify_emotions(df)
 
+    print('finished emotion')
     save_csv(df, f"text_data/emotion/{scrape_id}.csv")
 
     print(f"emotion for {scrape_id} complete")

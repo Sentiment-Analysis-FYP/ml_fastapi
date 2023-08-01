@@ -73,6 +73,7 @@ def run_classifiers_in_background(scrape_id, email):
 #     return get_emotion_info(text)
 
 def run_emotion_in_background(scrape_id):
+    print('called run emotion in background')
     # get file with emotions classified
     run_emotion(scrape_id)
     return
