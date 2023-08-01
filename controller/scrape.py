@@ -18,10 +18,10 @@ async def run_scrape(data: dict, scrape_id):
     start_date = data['start_date']
     end_date = data['end_date']
     max_tweets = data['max_tweets']
-    # print(keywords)
+    print(data)
     if not (username or keywords):
         return
-    scrape = await get_tweets(scrape_id, username, keywords, start_date, end_date)
+    scrape = await get_tweets(scrape_id, username, keywords, start_date, end_date, max_tweets)
     return scrape
 
 
@@ -70,8 +70,18 @@ async def write_to_csv(paginator, csv_writer):
     return
 
 
-async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, end_date):
+async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, end_date, max_tweets):
     """2-step function to get tweets based on provided username, and then based on the other parameters"""
+    max_res = MAX_RESULTS
+    flatten_limit = FLATTEN_LIMIT
+
+    if max_tweets > 100:
+        max_res = 100
+        flatten_limit = max_tweets // 100
+
+    if max_tweets < 100:
+        max_res = max_tweets
+        flatten_limit = 1
 
     query = ' OR '.join(keywords)
     print(query)
@@ -88,8 +98,8 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
                                               user_fields=['username', 'name'],
                                               expansions='author_id',
                                               tweet_fields=['id', 'author_id', 'created_at', 'text'],
-                                              max_results=MAX_RESULTS,
-                                              limit=FLATTEN_LIMIT)
+                                              max_results=max_res,
+                                              limit=flatten_limit)
 
         await write_to_csv(keywords_paginator, csv_writer)
 
@@ -102,7 +112,6 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
 
     username_paginator = tweepy.Paginator(client.get_users_tweets,
                                           id=user_id,
-                                          include_rts=False,
                                           max_results=MAX_RESULTS,
                                           tweet_fields=['id', 'created_at', 'text'],
                                           limit=FLATTEN_LIMIT)

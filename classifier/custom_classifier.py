@@ -58,76 +58,101 @@ def calculate_score(dataset):
     return dataset
 
 
+stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
+                'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'before',
+                'being', 'below', 'between', 'both', 'by', 'can', 'd', 'did', 'do',
+                'does', 'doing', 'down', 'during', 'each', 'few', 'for', 'from',
+                'further', 'had', 'has', 'have', 'having', 'he', 'her', 'here',
+                'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in',
+                'into', 'is', 'it', 'its', 'itself', 'just', 'll', 'm', 'ma',
+                'me', 'more', 'most', 'my', 'myself', 'now', 'o', 'of', 'on', 'once',
+                'only', 'or', 'other', 'our', 'ours', 'ourselves', 'out', 'own', 're', 's', 'same', 'she', "shes",
+                'should', "shouldve", 'so', 'some', 'such',
+                't', 'than', 'that', "thatll", 'the', 'their', 'theirs', 'them',
+                'themselves', 'then', 'there', 'these', 'they', 'this', 'those',
+                'through', 'to', 'too', 'under', 'until', 'up', 've', 'very', 'was',
+                'we', 'were', 'what', 'when', 'where', 'which', 'while', 'who', 'whom',
+                'why', 'will', 'with', 'won', 'y', 'you', "youd", "youll", "youre",
+                "youve", 'your', 'yours', 'yourself', 'yourselves']
+STOPWORDS = set(stopwordlist)
+
+
+def cleaning_stopwords(text):
+    return " ".join([word for word in str(text).split() if word not in STOPWORDS])
+
+
+english_punctuations = string.punctuation
+punctuations_list = english_punctuations
+
+
+def cleaning_punctuations(text):
+    translator = str.maketrans('', '', punctuations_list)
+    return text.translate(translator)
+
+
+def cleaning_repeating_char(text):
+    return re.sub(r'(.)1+', r'1', text)
+
+
+def clean_repeating_words(text):
+    # Use regular expression to find consecutive duplicate words
+    pattern = r'\b(\w+)( \1\b)+'
+    # Use re.sub to replace duplicate words with a single occurrence
+    cleaned_text = re.sub(pattern, r'\1', text)
+    return cleaned_text
+
+
+def cleaning_URLs(data):
+    return re.sub('((www.[^s]+)|(https?://[^s]+))', ' ', data)
+
+
+def cleaning_numbers(data):
+    return re.sub('[0-9]+', '', data)
+
+
+tokenizer = RegexpTokenizer(r'\w+')
+
+st = PorterStemmer()
+
+
+def stemming_on_text(data):
+    text = [st.stem(word) for word in data]
+    return data
+
+
+lm = WordNetLemmatizer()
+
+
+def lemmatizer_on_text(data):
+    text = [lm.lemmatize(word) for word in data]
+    return data
+
+
+def remove_usernames(text):
+    # Use regular expression to find and remove usernames
+    pattern = r'@\w+'
+    cleaned_text = re.sub(pattern, '', text)
+    return cleaned_text
+
+
 def clean_data(dataset):
-    stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
-                    'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'before',
-                    'being', 'below', 'between', 'both', 'by', 'can', 'd', 'did', 'do',
-                    'does', 'doing', 'down', 'during', 'each', 'few', 'for', 'from',
-                    'further', 'had', 'has', 'have', 'having', 'he', 'her', 'here',
-                    'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in',
-                    'into', 'is', 'it', 'its', 'itself', 'just', 'll', 'm', 'ma',
-                    'me', 'more', 'most', 'my', 'myself', 'now', 'o', 'of', 'on', 'once',
-                    'only', 'or', 'other', 'our', 'ours', 'ourselves', 'out', 'own', 're', 's', 'same', 'she', "shes",
-                    'should', "shouldve", 'so', 'some', 'such',
-                    't', 'than', 'that', "thatll", 'the', 'their', 'theirs', 'them',
-                    'themselves', 'then', 'there', 'these', 'they', 'this', 'those',
-                    'through', 'to', 'too', 'under', 'until', 'up', 've', 'very', 'was',
-                    'we', 'were', 'what', 'when', 'where', 'which', 'while', 'who', 'whom',
-                    'why', 'will', 'with', 'won', 'y', 'you', "youd", "youll", "youre",
-                    "youve", 'your', 'yours', 'yourself', 'yourselves']
-    STOPWORDS = set(stopwordlist)
-
-    def cleaning_stopwords(text):
-        return " ".join([word for word in str(text).split() if word not in STOPWORDS])
-
     dataset['text'] = dataset['text'].apply(lambda text: cleaning_stopwords(text))
     # dataset['text'].head()
 
-    english_punctuations = string.punctuation
-    punctuations_list = english_punctuations
-
-    def cleaning_punctuations(text):
-        translator = str.maketrans('', '', punctuations_list)
-        return text.translate(translator)
-
     dataset['text'] = dataset['text'].apply(lambda x: cleaning_punctuations(x))
-
-    def cleaning_repeating_char(text):
-        return re.sub(r'(.)1+', r'1', text)
 
     dataset['text'] = dataset['text'].apply(lambda x: cleaning_repeating_char(x))
 
-    def cleaning_URLs(data):
-        return re.sub('((www.[^s]+)|(https?://[^s]+))', ' ', data)
-
     dataset['text'] = dataset['text'].apply(lambda x: cleaning_URLs(x))
-
-    def cleaning_numbers(data):
-        return re.sub('[0-9]+', '', data)
 
     dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x[1:]))
 
-    dataset['emotion_score'] = numpy.nan
-    dataset['emotion_label'] = numpy.nan
     # dataset = classify_emotions(dataset)
     # print(dataset.tail())
 
-    tokenizer = RegexpTokenizer(r'\w+')
     dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
 
-    st = PorterStemmer()
-
-    def stemming_on_text(data):
-        text = [st.stem(word) for word in data]
-        return data
-
     dataset['text'] = dataset['text'].apply(lambda x: stemming_on_text(x))
-
-    lm = WordNetLemmatizer()
-
-    def lemmatizer_on_text(data):
-        text = [lm.lemmatize(word) for word in data]
-        return data
 
     dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 
@@ -144,8 +169,13 @@ model = pipeline("text-classification", model="j-hartmann/emotion-english-distil
 
 def classify_emotions(dataset):
     print('classifying emotions')
-    all_texts = dataset['text'].tolist()
-    # print(all_texts)
+    # df = dataset.copy(deep=True)
+    # df['text'] = df['text'].apply(tokenizer.tokenize)
+    all_texts = dataset['text'].apply(lambda x:
+                                      cleaning_numbers(
+                                          cleaning_URLs(
+                                              cleaning_punctuations(cleaning_stopwords(remove_usernames(x)))))).tolist()
+    print(all_texts)
     print('list')
     all_emotions = model(all_texts)
     print('after run emo model')
@@ -154,7 +184,6 @@ def classify_emotions(dataset):
     dataset['emotion_label'] = [d['label'] for d in all_emotions]
     # print(dataset.columns)
     return dataset
-
 
 # def get_emotion_info(text_item):
 #     """second emo classifier, takes long"""
