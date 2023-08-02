@@ -82,8 +82,14 @@ async def begin_scrape(request: Request, scrape_id: str, background_tasks: Backg
 async def run_emotion_in_background(scrape_id):
     print('called run emotion in background')
     # get file with emotions classified
-    run_emotion(scrape_id)
-    return {"message": f"Emotion for {scrape_id} complete"}
+    df = run_emotion(scrape_id)
+
+    json_payload = {
+        'scrape_id': scrape_id,
+        'data': df.to_dict(orient='records')
+    }
+
+    return {"data": json_payload}
 
 
 def run_classifiers_in_background(scrape_id, email):

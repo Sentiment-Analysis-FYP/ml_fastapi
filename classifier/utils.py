@@ -105,14 +105,15 @@ def send_emotion_to_express(scrape_id):
     express_url = os.getenv('EXPRESS_BASE_URL')
     emotion_file_path = f"text_data/emotion/{scrape_id}.csv"
     df = pd.read_csv(emotion_file_path, encoding='utf-8')
-    df['text'] = df['text'].apply(
-        lambda x: codecs.escape_decode(bytes(x[2:-1], "utf-8"))[0].decode("utf-8"))
+    # df['text'] = df['text'].apply(
+    #     lambda x: codecs.escape_decode(bytes(x[2:-1], "utf-8"))[0].decode("utf-8"))
 
     json_payload = {
         'scrape_id': scrape_id,
         'data': df.to_dict(orient='records')
     }
 
+    print('sending emotions to express')
     url = f"{express_url}/ml/emotion"
     response = requests.post(url, json=json_payload)
 

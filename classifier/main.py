@@ -16,7 +16,7 @@ def run_classifiers(scrape_id):
 
 
 def run_emotion(scrape_id):
-    file_path = f"text_data/incomplete/{scrape_id}.csv"
+    file_path = f"text_data/complete/{scrape_id}.csv"
     df = pd.read_csv(file_path)
 
     # emo
@@ -27,4 +27,4 @@ def run_emotion(scrape_id):
 
     print(f"emotion for {scrape_id} complete")
 
-    return
+    return df

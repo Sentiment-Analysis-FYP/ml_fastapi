@@ -1,3 +1,4 @@
+import codecs
 import re
 import string
 
@@ -39,6 +40,8 @@ def run_custom(scrape_id):
     df = calculate_score(df)
 
     # df['topic'] = df['text'].apply(lambda x:)
+    df['text'] = df['text'].apply(
+        lambda x: codecs.escape_decode(bytes(x[2:-1], "utf-8"))[0].decode("utf-8"))
 
     complete_path = f"text_data/complete/{scrape_id}.csv"
     save_csv(df, complete_path)
@@ -178,7 +181,7 @@ def classify_emotions(dataset):
                                                   cleaning_stopwords(
                                                       clean_repeating_words(
                                                           remove_usernames(x))))))).tolist()
-    print(all_texts)
+    # print(all_texts)
     print('list')
     all_emotions = model(all_texts)
     print('after run emo model')
