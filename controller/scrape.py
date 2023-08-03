@@ -80,7 +80,7 @@ async def get_tweets(scrape_id: str, username: str, keywords: list, start_date, 
         flatten_limit = max_tweets // 100
 
     if max_tweets <= 100:
-        max_res = max_tweets
+        max_res = max(max_tweets, 5)
         flatten_limit = 1
 
     query = ' OR '.join(keywords)

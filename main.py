@@ -89,7 +89,7 @@ async def run_emotion_in_background(scrape_id):
         'data': df.to_dict(orient='records')
     }
 
-    return {"data": json_payload}
+    return {"emotion": json_payload}
 
 
 def run_classifiers_in_background(scrape_id, email):

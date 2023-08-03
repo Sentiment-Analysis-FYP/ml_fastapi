@@ -33,8 +33,8 @@ def run_custom(scrape_id):
     # print(df_predict.columns)
     # df['emotion_label'] = df_predict['emotion_label']
     # df['emotion_score'] = df_predict['emotion_score']
-
-    # df = classify_emotions(df)
+    if 'emotion_label' not in df:
+        df = classify_emotions(df)
     print(df.columns)
 
     df = calculate_score(df)

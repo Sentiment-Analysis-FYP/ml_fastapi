@@ -9,8 +9,8 @@ def run_classifiers(scrape_id):
     """Run vader, textblob and custom classifiers sequentially"""
     run_vader(scrape_id)
     run_textblob(scrape_id)
-    run_custom(scrape_id)
     # run_emotion(scrape_id)
+    run_custom(scrape_id)
 
     return
 
@@ -20,7 +20,8 @@ def run_emotion(scrape_id):
     df = pd.read_csv(file_path)
 
     # emo
-    df = classify_emotions(df)
+    if 'emotion_label' not in df:
+        df = classify_emotions(df)
 
     print('finished emotion')
     save_csv(df, f"text_data/emotion/{scrape_id}.csv")
